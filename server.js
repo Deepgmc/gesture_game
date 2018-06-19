@@ -6,10 +6,6 @@ var express = require('express'),
 
 /*
  * This object-array shows the relations between gestures
- * the result text stores on client-side
- * */
-/*
- * This object-array shows the relations between gestures
  * */
 var relations = {
    paper: {
@@ -33,13 +29,6 @@ var relations = {
       lizard: 'Rock crushes Lizard'
    }
 }
-/*var relations2 = {
-   paper: ['rock', 'spock'],
-   scissors: ['paper', 'lizard'],
-   lizard: ['spock', 'paper'],
-   spock: ['scissors', 'rock'],
-   rock: ['paper', 'lizard']
-}*/
 
 expr_srv.use(express.static('public'));
 
@@ -51,8 +40,8 @@ var io = socket(server);
 
 io.on('connection', function(socket){
    console.log('ConnectedUser with a socket id:', socket.id);
-   // проверка 1й или 2й юзер. В зависимости от этого добавляем нового юзера или коннектим 2го
-   // ЕСЛИ юзер 2й: отсылаем на этот сокет сообщение, что к юзеру 1 приджойнился юзер 2 и на клиенте реагируем на это
+   // РїСЂРѕРІРµСЂРєР° 1Р№ РёР»Рё 2Р№ СЋР·РµСЂ. Р’ Р·Р°РІРёСЃРёРјРѕСЃС‚Рё РѕС‚ СЌС‚РѕРіРѕ РґРѕР±Р°РІР»СЏРµРј РЅРѕРІРѕРіРѕ СЋР·РµСЂР° РёР»Рё РєРѕРЅРЅРµРєС‚РёРј 2РіРѕ
+   // Р•РЎР›Р СЋР·РµСЂ 2Р№: РѕС‚СЃС‹Р»Р°РµРј РЅР° СЌС‚РѕС‚ СЃРѕРєРµС‚ СЃРѕРѕР±С‰РµРЅРёРµ, С‡С‚Рѕ Рє СЋР·РµСЂСѓ 1 РїСЂРёРґР¶РѕР№РЅРёР»СЃСЏ СЋР·РµСЂ 2 Рё РЅР° РєР»РёРµРЅС‚Рµ СЂРµР°РіРёСЂСѓРµРј РЅР° СЌС‚Рѕ
 
    socket.on('user_connect', function(data){
       if(data.isLeadUser){

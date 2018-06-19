@@ -1,16 +1,9 @@
-/*подключение дополнительных файлов js (в данном случае - test.js с одного уровня с index.js)
- import {Test} from './test'
- window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
- require('../css/index.css');
- require('../node_modules/bootstrap/dist/css/bootstrap.css');
-*/
-
 // webpack imports
 import React from 'react';
 import ReactDOM from 'react-dom';
 
-window.gg_app = (function(){
-   // gg_app local variables
+var Gesture_App = (function(){
+   // Gesture_App local variables
    var module = {}, // for non-private return
       io = require('socket.io-client'),
       socket = io.connect('http://localhost:3002'),
@@ -136,6 +129,7 @@ window.gg_app = (function(){
                />
             )
          });
+
          return (
             <div>
                {gestures}
@@ -185,7 +179,8 @@ window.gg_app = (function(){
       constructor(props) {
          super(props);
 
-         this.initialState = this.state = {
+         this.initialState =
+         this.state = {
             leadSelection: '',
             slaveSelection: '',
             winner: '',
@@ -237,7 +232,6 @@ window.gg_app = (function(){
       }
 
       handleResetClick() {
-         var self = this;
          this.setState(this.initialState);
       }
    }
