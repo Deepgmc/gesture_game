@@ -1,0 +1,89 @@
+body, html{
+    padding: 0;
+    margin:0;
+    color: #232323;
+}
+/* global containers */
+.app_header{
+    float:left;
+    width:100%;
+}
+#app_gameArea{
+    float:left;
+    width:70%;
+    padding:0 0 0 10px;
+}
+#app_schemeArea{
+    float:right;
+    width:25%;
+    border:1px soid red;
+}
+#app_resultArea{
+    width:100%;
+    float:left;
+    clear:both;
+    height:200px;
+}
+
+.app_hdr_l, .app_hdr_r{
+    float:left;
+    height:100px;
+    border-bottom: 3px solid grey;
+    margin:0 0 30px 0;
+}
+.app_hdr_l{
+    text-align: center;
+    width:30%;
+}
+.app_hdr_l > h1 {
+    color: #0001bf;
+    text-decoration: underline;
+}
+.app_hdr_r{
+    width:70%;
+}
+
+.connection_link{
+    padding:5px;
+    border:1px solid grey;
+    border-radius: 7px;
+}
+.loading_screen{
+    text-align:center;
+}
+
+.gestureItem{
+    cursor:pointer;
+    border:1px dotted lightgrey;
+    margin:10px;
+}
+.gestureItem:hover{
+    background-color: #878787;
+}
+.selectedItem{
+    border:1px solid green;
+}
+
+.resultsImage{
+    float:left;
+    margin:5px;
+}
+
+.resTextContainer{
+    margin:0 0 0 10px;
+    padding:40px 0 0 0;
+}
+.resultsText{
+    font-weight: bold;
+    font-size:18px;
+}
+.resetButton{
+    margin: 0 0 0 40px;
+}
+.tc_green{
+    color:green;
+}
+.tc_red{
+    color:red;
+}
+

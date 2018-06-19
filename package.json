@@ -1,0 +1,18 @@
+{
+  "name": "handgame",
+  "version": "0.0.1",
+  "description": "Simple rock-hand-lizard-scissors game",
+  "dependencies": {
+    "express": "^4.16.3",
+    "react": "^16.4.1",
+    "react-dom": "^16.4.1",
+    "socket.io": "^2.1.1"
+  },
+  "devDependencies": {
+    "babel-core": "^6.26.3",
+    "babel-loader": "^7.1.4",
+    "babel-preset-es2015": "^6.24.1",
+    "babel-preset-react": "^6.24.1",
+    "webpack": "^4.12.0"
+  }
+}
