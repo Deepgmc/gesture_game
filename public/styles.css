@@ -77,13 +77,22 @@ body, html{
     font-weight: bold;
     font-size:18px;
 }
+
+.resetButton_container{
+    float:left;
+    clear:both;
+}
 .resetButton{
     margin: 0 0 0 40px;
+    padding:5px 3px;
 }
 .tc_green{
     color:green;
 }
 .tc_red{
     color:red;
+}
+.tc_blue{
+    color:blue;
 }
 

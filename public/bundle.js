@@ -4542,24 +4542,28 @@ function _classCallCheck(instance, Constructor) { if (!(instance instanceof Cons
 
 function _possibleConstructorReturn(self, call) { if (!self) { throw new ReferenceError("this hasn't been initialised - super() hasn't been called"); } return call && (typeof call === "object" || typeof call === "function") ? call : self; }
 
-function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } /*����������� �������������� ������ js (� ������ ������ - test.js � ������ ������ � index.js)
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                import {Test} from './test'
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                window.$ = window.jQuery = require('../node_modules/jquery/dist/jquery.min.js');
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                require('../css/index.css');
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                require('../node_modules/bootstrap/dist/css/bootstrap.css');
-                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                               */
-
-// webpack imports
+function _inherits(subClass, superClass) { if (typeof superClass !== "function" && superClass !== null) { throw new TypeError("Super expression must either be null or a function, not " + typeof superClass); } subClass.prototype = Object.create(superClass && superClass.prototype, { constructor: { value: subClass, enumerable: false, writable: true, configurable: true } }); if (superClass) Object.setPrototypeOf ? Object.setPrototypeOf(subClass, superClass) : subClass.__proto__ = superClass; } // webpack imports
 
 
-window.gg_app = function () {
-   // gg_app local variables
+/*
+* Little Readme
+* Game have 2 types of users: Lead and Slave.
+* Leader creates game, slave connecting to him.
+* There can be a several pairs of players.
+* After second player is connected - game screen shows to both players.
+*
+* Primary game logic realized on the server side via the "relations" object-array
+* */
+
+var Gesture_App = function () {
+   // Gesture_App local variables
    var module = {},
        // for non-private return
    io = __webpack_require__(48),
        socket = io.connect('http://localhost:3002'),
 
-   // presence of a GET-parameter says the user type
+
+   // presence of a GET-parameter says the user is slave
    slaveId_get = new URL(window.location.href).searchParams.get('uid') || null,
        isLeadUser = !slaveId_get;
 
@@ -4594,9 +4598,11 @@ window.gg_app = function () {
          )
       );
    }
+
    function SecondUserHeader(props) {
       return _react2.default.createElement('p', null); // empty header for slave user; may be some greetings
    }
+
    function AppHeader(props) {
       if (props.isLeadUser) {
          return _react2.default.createElement(LeadUserHeader, null);
@@ -4621,14 +4627,14 @@ window.gg_app = function () {
       _inherits(GameComponent, _React$Component);
 
       // saving the global selection state
-      // later, it can save for example the total game score and so on
+      // later, that component can save for example the total game score and so on
       function GameComponent(props) {
          _classCallCheck(this, GameComponent);
 
          var _this = _possibleConstructorReturn(this, (GameComponent.__proto__ || Object.getPrototypeOf(GameComponent)).call(this, props));
 
          _this.state = {
-            // shows the game screen insted of loading screen when slave user joining
+            // shows the game screen instead of loading screen when slave user joining
             slaveUserJoined: false
          };
          return _this;
@@ -4638,10 +4644,12 @@ window.gg_app = function () {
          key: 'componentDidMount',
          value: function componentDidMount() {
             var self = this;
+
             socket.emit('user_connect', {
                isLeadUser: isLeadUser,
                slaveUid: slaveId_get || module.generatedSlaveId
             });
+
             socket.on('slave_user_connected', function (data) {
                // slave user joined to us, lets switch state
                self.setState({ slaveUserJoined: true });
@@ -4712,6 +4720,7 @@ window.gg_app = function () {
                   currentSelection: self.state.currentSelection
                });
             });
+
             return _react2.default.createElement(
                'div',
                null,
@@ -4778,6 +4787,7 @@ window.gg_app = function () {
    var ResultsComponent = function (_React$Component4) {
       _inherits(ResultsComponent, _React$Component4);
 
+      //component, that shows the game results (win|loose|selections)
       function ResultsComponent(props) {
          _classCallCheck(this, ResultsComponent);
 
@@ -4796,6 +4806,7 @@ window.gg_app = function () {
          key: 'componentDidMount',
          value: function componentDidMount() {
             var self = this;
+
             socket.on('round_results', function (srv_round_response) {
                self.setState(srv_round_response);
             });
@@ -4806,7 +4817,14 @@ window.gg_app = function () {
             var firstImage = 'img/',
                 secondImage = 'img/',
                 winnerText = '',
-                textColorClass = 'resultsText ';
+                textColorClass = 'resultsText ',
+                relation = this.state.text || '';
+
+            // we alwys show the 1st icon to the owner
+            // that means, if you're a slave player, your selection will be at 1st place.
+            // but lead player sees his selection at 1st place too at same time
+            // also here are some color-class preparations
+
             if (isLeadUser) {
                winnerText = this.state.winner === 'lead' ? 'win' : 'loose';
                textColorClass += this.state.winner === 'lead' ? 'tc_green' : 'tc_red';
@@ -4817,6 +4835,13 @@ window.gg_app = function () {
                textColorClass += this.state.winner === 'slave' ? 'tc_green' : 'tc_red';
                firstImage += this.state.slaveSelection;
                secondImage += this.state.leadSelection;
+            }
+
+            if (this.state.winner === 'draw') {
+               winnerText = 'have a draw';
+               textColorClass = 'resultsText tc_blue';
+            } else {
+               relation += '!';
             }
             firstImage += '.png';
             secondImage += '.png';
@@ -4837,8 +4862,7 @@ window.gg_app = function () {
                      _react2.default.createElement(
                         'p',
                         { className: 'resultsText' },
-                        this.state.text,
-                        '!'
+                        relation
                      ),
                      _react2.default.createElement(
                         'p',
@@ -4849,9 +4873,13 @@ window.gg_app = function () {
                      )
                   ),
                   _react2.default.createElement(
-                     'button',
-                     { className: 'resetButton', onClick: this.handleResetClick.bind(this) },
-                     'Start new round'
+                     'div',
+                     { className: 'resetButton_container' },
+                     _react2.default.createElement(
+                        'button',
+                        { className: 'resetButton', onClick: this.handleResetClick.bind(this) },
+                        'Start new round'
+                     )
                   )
                );
             } else {
@@ -4861,7 +4889,6 @@ window.gg_app = function () {
       }, {
          key: 'handleResetClick',
          value: function handleResetClick() {
-            var self = this;
             this.setState(this.initialState);
          }
       }]);

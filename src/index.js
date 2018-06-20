@@ -2,12 +2,24 @@
 import React from 'react';
 import ReactDOM from 'react-dom';
 
+
+/*
+* Little Readme
+* Game have 2 types of users: Lead and Slave.
+* Leader creates game, slave connecting to him.
+* There can be a several pairs of players.
+* After second player is connected - game screen shows to both players.
+*
+* Primary game logic realized on the server side via the "relations" object-array
+* */
+
 var Gesture_App = (function(){
    // Gesture_App local variables
    var module = {}, // for non-private return
       io = require('socket.io-client'),
       socket = io.connect('http://localhost:3002'),
-      // presence of a GET-parameter says the user type
+
+      // presence of a GET-parameter says the user is slave
       slaveId_get = new URL(window.location.href).searchParams.get('uid') || null,
       isLeadUser = !slaveId_get;
 
@@ -25,7 +37,6 @@ var Gesture_App = (function(){
       module.generatedSlaveId = makeId(7);
    }
 
-
    function LeadUserHeader(props) {
       return (
          <div>
@@ -34,9 +45,11 @@ var Gesture_App = (function(){
          </div>
       );
    }
+
    function SecondUserHeader(props) {
       return <p></p>; // empty header for slave user; may be some greetings
    }
+
    function AppHeader(props) {
       if (props.isLeadUser) {
          return <LeadUserHeader />;
@@ -63,22 +76,24 @@ var Gesture_App = (function(){
 
    class GameComponent extends React.Component {
       // saving the global selection state
-      // later, it can save for example the total game score and so on
+      // later, that component can save for example the total game score and so on
       constructor(props) {
          super(props);
 
          this.state = {
-            // shows the game screen insted of loading screen when slave user joining
+            // shows the game screen instead of loading screen when slave user joining
             slaveUserJoined: false
          };
       }
 
       componentDidMount(){
          var self = this;
+
          socket.emit('user_connect', {
             isLeadUser: isLeadUser,
             slaveUid: slaveId_get || module.generatedSlaveId
          });
+
          socket.on('slave_user_connected', function(data){
             // slave user joined to us, lets switch state
             self.setState( {slaveUserJoined: true} );
@@ -176,6 +191,7 @@ var Gesture_App = (function(){
    }
 
    class ResultsComponent extends React.Component {
+      //component, that shows the game results (win|loose|selections)
       constructor(props) {
          super(props);
 
@@ -190,6 +206,7 @@ var Gesture_App = (function(){
 
       componentDidMount(){
          var self = this;
+
          socket.on('round_results', function(srv_round_response){
             self.setState(srv_round_response);
          });
@@ -199,7 +216,14 @@ var Gesture_App = (function(){
          var firstImage = 'img/',
              secondImage = 'img/',
              winnerText = '',
-             textColorClass = 'resultsText ';
+             textColorClass = 'resultsText ',
+             relation = this.state.text || '';
+
+         // we alwys show the 1st icon to the owner
+         // that means, if you're a slave player, your selection will be at 1st place.
+         // but lead player sees his selection at 1st place too at same time
+         // also here are some color-class preparations
+
          if(isLeadUser){
             winnerText = this.state.winner === 'lead' ? 'win' : 'loose';
             textColorClass += this.state.winner === 'lead' ? 'tc_green' : 'tc_red';
@@ -211,6 +235,13 @@ var Gesture_App = (function(){
             firstImage += this.state.slaveSelection;
             secondImage += this.state.leadSelection;
          }
+
+         if(this.state.winner === 'draw'){
+            winnerText = 'have a draw';
+            textColorClass = 'resultsText tc_blue';
+         } else {
+            relation += '!';
+         }
          firstImage += '.png';
          secondImage += '.png';
          if(this.state.winner){
@@ -220,10 +251,12 @@ var Gesture_App = (function(){
                   <img className="resultsImage" src={firstImage}/>
                   <img className="resultsImage" src={secondImage}/>
                   <div className="resTextContainer">
-                     <p className="resultsText">{this.state.text}!</p>
+                     <p className="resultsText">{relation}</p>
                      <p className={textColorClass}>You {winnerText}!</p>
                   </div>
-                  <button className="resetButton" onClick={this.handleResetClick.bind(this)}>Start new round</button>
+                  <div className="resetButton_container">
+                     <button className="resetButton" onClick={this.handleResetClick.bind(this)}>Start new round</button>
+                  </div>
                </div>
             )
          } else {
@@ -244,5 +277,3 @@ var Gesture_App = (function(){
    return module;
 
 })();
-
-
