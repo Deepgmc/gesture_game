@@ -11,8 +11,8 @@ var Game = (function(){
       users = []
       relations = {
       paper: {
-         rock: 'Paper covers Rock',
-         spock: 'Paper disproves Spock'
+         rock: 'Paper covers Rock!',
+         spock: 'Paper disproves Spock!'
       },
       scissors: {
          paper: 'Scissors cuts Paper',
